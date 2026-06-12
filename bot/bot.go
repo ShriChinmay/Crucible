@@ -9,6 +9,7 @@ import (
 
 func RunBot(
     client *http.Client,
+    publisher *Publisher,
     botID string,
     runID string,
     orderCount int,
@@ -51,8 +52,15 @@ func RunBot(
 	orders := []Order{order1, order2, order3}
 
 	for i := 0; i < orderCount; i++ {
-		results = append(results, sendOrder(client, orders[i]))
-	}
+
+    result := sendOrder(client, orders[i])
+
+    results = append(results, result)
+
+    if publisher != nil {
+        _ = publisher.PublishOrderEvent(result, runID)
+    }
+}
     return results
 }
 
@@ -64,9 +72,14 @@ func sendOrder(
 	jsonData, err := json.Marshal(order)
 	if err != nil {
 		return OrderResult{
-			Status:   "ERROR",
-			ErrorMsg: err.Error(),
-		}
+		RunID:         order.RunID,
+		BotID:         order.BotID,
+		OrderID:       order.OrderID,
+		Type:          order.Type,
+		Status:        "ERROR",
+		TimestampSent: order.TimestampSent,
+		ErrorMsg:      err.Error(),
+	}
 	}
 
 
@@ -83,6 +96,7 @@ func sendOrder(
 			OrderID: order.OrderID,
 			Type:    order.Type,
 			Status:   "ERROR",
+			TimestampSent: order.TimestampSent,
 			ErrorMsg: err.Error(),
 		}
 	}
@@ -108,6 +122,7 @@ func sendOrder(
 			Type: order.Type,
 			Status:    "TIMEOUT",
 			LatencyNs: latency,
+			TimestampSent: order.TimestampSent,
 			ErrorMsg:  err.Error(),
 		}
 	}
@@ -122,6 +137,7 @@ func sendOrder(
 			Type: order.Type,
 			Status:    "ERROR",
 			LatencyNs: latency,
+			TimestampSent: order.TimestampSent,
 			ErrorMsg:  resp.Status,
 		}
 	}
@@ -133,6 +149,7 @@ func sendOrder(
 		Type: order.Type,
 		Status:    "OK",
 		LatencyNs: latency,
+		TimestampSent: order.TimestampSent,
 		ErrorMsg:  "",
 	}
 }

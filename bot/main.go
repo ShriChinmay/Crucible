@@ -9,12 +9,22 @@ import (
 func main(){
 	client := &http.Client{
     	Timeout: 2 * time.Second,
-		}
-	results := RunBot(
+	}
+	publisher := NewPublisher()
+
+	start := time.Now()
+
+	results := LaunchFleet(
 		client,
-		"bot-001",
+		publisher,
 		"run-001",
+		5,
 		3,
+	)
+	elapsed := time.Since(start)
+	fmt.Printf(
+		"Fleet completed in %.2f ms\n",
+		elapsed.Seconds()*1000,
 	)
 	
 	var totalLatency int64
