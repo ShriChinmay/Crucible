@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+	"github.com/ShriChinmay/Crucible/engine"
 )
 
 func main() {
@@ -11,11 +12,11 @@ func main() {
 		Timeout: 2 * time.Second,
 	}
 
-	publisher := NewPublisher()
+	publisher := engine.NewPublisher()
 
 	start := time.Now()
 
-	results := LaunchFleet(
+	results := engine.LaunchFleet(
 		client,
 		publisher,
 		"run-001",
@@ -57,7 +58,7 @@ func main() {
 		}
 	}
 
-	metrics := ComputeMetrics(
+	metrics := engine.ComputeMetrics(
 		results,
 		elapsed,
 	)
