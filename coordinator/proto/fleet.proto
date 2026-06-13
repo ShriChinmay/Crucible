@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package coordinator;
+
+option go_package = "github.com/ShriChinmay/Crucible/coordinator/proto";
+
+service FleetCoordinator {
+    rpc RunBenchmark(BenchmarkRequest)
+        returns (BenchmarkResponse);
+}
+
+message BenchmarkRequest {
+    string run_id = 1;
+    int32 bot_count = 2;
+    int32 orders_per_bot = 3;
+}
+
+message BenchmarkResponse {
+    int32 total_orders = 1;
+    int32 successful_orders = 2;
+    int32 failed_orders = 3;
+
+    double failure_rate = 4;
+
+    double fleet_time_ms = 5;
+
+    double tps = 6;
+
+    double average_latency_ms = 7;
+    double min_latency_ms = 8;
+    double max_latency_ms = 9;
+
+    double p50_latency_ms = 10;
+    double p90_latency_ms = 11;
+    double p99_latency_ms = 12;
+}
